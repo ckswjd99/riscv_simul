@@ -61,6 +61,30 @@ void Memory<WordType, MemoryAddrType>::store(MemoryAddrType address, WordType da
   *(this->root->find(address)) = data;
 }
 
+// benchmark functions
+template <typename WordType, typename MemoryAddrType>
+MemoryAddrType PageTree<WordType, MemoryAddrType>::countLeaf() {
+  if(this->data != nullptr) return 1;
+  else {
+    MemoryAddrType counter = 0;
+    for(int i=0; i < (1 << this->pageBit); i++) {
+      if(this->children[i] != nullptr) counter += this->children[i]->countLeaf();
+    }
+    return counter;
+  }
+}
+
+template <typename WordType, typename MemoryAddrType>
+unsigned long long Memory<WordType, MemoryAddrType>::totalMemorySize() {
+  return (1ULL << (sizeof(MemoryAddrType) * 8)) * sizeof(WordType) * 8;
+}
+
+template <typename WordType, typename MemoryAddrType>
+unsigned long long Memory<WordType, MemoryAddrType>::usedMemorySize() {
+  int leafNum = this->root->countLeaf();
+  return leafNum * sizeof(WordType) * 8;
+}
+
 
 // avoid linker errors
 template class Memory<int, int>;

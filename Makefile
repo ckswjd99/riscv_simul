@@ -1,6 +1,6 @@
 COMPILER = g++
-COMPILE_OPTION = -g
-COMPILE_LIBRARY = -c
+COMPILE_OPTION = -g --std=c++11
+COMPILE_LIBRARY = -c --std=c++11
 
 all: memory.o
 
@@ -13,5 +13,5 @@ memory.o:
 
 test: memory.o
 	@${COMPILER} ${COMPILE_LIBRARY} test/testMemory.cpp -o temp/testMemory.o
-	@${COMPILER} temp/memory.o temp/testMemory.o -o temp/testMemory
+	@${COMPILER} ${COMPILE_OPTION} temp/memory.o temp/testMemory.o -o temp/testMemory
 	@temp/testMemory.exe

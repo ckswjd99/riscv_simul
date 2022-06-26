@@ -4,15 +4,15 @@
 #include "stdlib.h"
 #include "time.h"
 
-#define WORD unsigned __int32
-#define MEMORY_ADDR unsigned __int32
+using WORD = uint32_t;
+using MEMORY_ADDR = uint32_t;
 
-int bigRand() {
-  int x = rand() & 0xff;
-  x |= (rand() & 0xff) << 8;
-  x |= (rand() & 0xff) << 16;
-  x |= (rand() & 0xff) << 24;
-  return x;
+unsigned long long bigRand() {
+  unsigned long long r = 0;
+  for (int i = 0; i < 5; ++i) {
+      r = (r << 15) | (rand() & 0x7FFF);
+  }
+  return r & 0xFFFFFFFFFFFFFFFFULL;
 }
 
 int main () {
@@ -29,16 +29,26 @@ int main () {
   Memory<int32_t, int32_t>* mem = new Memory<int32_t, int32_t>(pageBit);
 
   for(int i = 0; i < testNum; i++) {
-    int randAddress = bigRand() % maxAddress + minAddress;
-    int randWord = bigRand() % maxWord + minWord;
+    MEMORY_ADDR randAddress = bigRand() % maxAddress + minAddress;
+    WORD randWord = bigRand() % maxWord + minWord;
+    // printf("%d %llu %llu\n", i, randAddress, randWord);
+
     mem->store(randAddress, randWord);
-    int loadedWord = mem->load(randAddress);
+    WORD loadedWord = mem->load(randAddress);
     if(randWord != loadedWord) {
       printf("testMemory: Error! stored %X, loaded %X.\n", randWord, loadedWord);
       return 0;
     }
   }
 
-  printf("testMemory: PASS! tested %d cases.\n", testNum);
+  unsigned long long usedMemorySize = mem->usedMemorySize();
+  unsigned long long totalMemorySize = mem->totalMemorySize();
+  printf(
+    "testMemory: PASS! tested %d load & stores, %llu / %llu bits (%.10f %%) used.\n",
+    testNum, 
+    usedMemorySize, 
+    totalMemorySize, 
+    (usedMemorySize / 1e10) / (totalMemorySize / 1e10) * 100
+  );
 
 }

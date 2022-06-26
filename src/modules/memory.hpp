@@ -12,6 +12,9 @@ public:
 
   WordType* find(MemoryAddrType address);
 
+  // benchmark
+  MemoryAddrType countLeaf();
+
 private:
   int pageBit;
   int depth;
@@ -27,6 +30,10 @@ public:
 
   WordType load(MemoryAddrType address);
   void store(MemoryAddrType address, WordType data);
+  
+  // benchmark
+  unsigned long long totalMemorySize();
+  unsigned long long usedMemorySize();
 
 private:
   int pageBit;
